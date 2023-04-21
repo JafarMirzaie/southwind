@@ -99,11 +99,7 @@ public class Startup
             .AddMvc(options => options.AddSignumGlobalFilters())
             .AddApplicationPart(typeof(SignumServer).Assembly)
             .AddApplicationPart(typeof(AuthServer).Assembly)
-            .AddJsonOptions(options => options.AddSignumJsonConverters())
-            .ConfigureApplicationPartManager(apm =>
-            {
-                apm.FeatureProviders.Add(new SignumControllerFactory(typeof(Startup).Assembly));
-            });
+            .AddJsonOptions(options => options.AddSignumJsonConverters());
         services.AddSignalR();
         services.AddSignumValidation();
         services.Configure<IISServerOptions>(a => a.AllowSynchronousIO = true); //JSon.Net requires it
@@ -185,15 +181,20 @@ GET http://localhost/Southwind.React/api/resource?apiKey=YOUR_API_KEY
             Starter.Start(
                 Configuration.GetConnectionString("ConnectionString")!,
                 Configuration.GetValue<bool>("IsPostgres"),
-                Configuration.GetConnectionString("AzureStorageConnectionString"), 
-                Configuration.GetValue<string>("BroadcastSecret"), 
-                Configuration.GetValue<string>("BroadcastUrls"), 
-                detectSqlVersion: false);
+                Configuration.GetConnectionString("AzureStorageConnectionString"),
+                Configuration.GetValue<string>("BroadcastSecret"),
+                Configuration.GetValue<string>("BroadcastUrls"),
+                wsb: new WebServerBuilder
+                {
+                    ApplicationBuilder = app,
+                    ApplicationLifetime = lifetime,
+                    WebHostEnvironment = env,
+                    AuthTokenEncryptionKey = "IMPORTANT SECRET FROM Southwind. CHANGE THIS STRING!!!",
+                    MachineName = Configuration.GetValue<string?>("ServerName"),
+                    DefaultCulture = CultureInfo.GetCultureInfo("en")
+                });
 
             Statics.SessionFactory = new ScopeSessionFactory(new VoidSessionFactory());
-
-            log.Switch("WebStart");
-            WebStart(app, env, lifetime, Configuration.GetValue<string?>("ServerName"));
 
             log.Switch("UseEndpoints");
 
@@ -261,79 +262,5 @@ GET http://localhost/Southwind.React/api/resource?apiKey=YOUR_API_KEY
 
             return true;
         }
-    }
-
-    public static void WebStart(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime, string? machineName)
-    {
-        SignumServer.Start(app, env, typeof(Startup).Assembly);
-        if (machineName != null)
-            Schema.Current.MachineName = machineName;
-        
-        AuthServer.Start(app, () => Starter.Configuration.Value.AuthTokens, "IMPORTANT SECRET FROM Southwind. CHANGE THIS STRING!!!");
-        CacheServer.Start(app);
-        FilesServer.Start(app);
-        UserQueryServer.Start(app);
-        DashboardServer.Start(app);
-        WordServer.Start(app);
-        ExcelServer.Start(app);
-        ChartServer.Start(app);
-        MapServer.Start(app);
-        ToolbarServer.Start(app);
-        TranslationServer.Start(app,
-            new AlreadyTranslatedTranslator(),
-            new AzureTranslator(
-                () => Starter.Configuration.Value.Translation.AzureCognitiveServicesAPIKey,
-                () => Starter.Configuration.Value.Translation.AzureCognitiveServicesRegion),
-            new DeepLTranslator(() => Starter.Configuration.Value.Translation.DeepLAPIKey)
-        ); //TranslationServer
-        SchedulerServer.Start(app, lifetime);
-        ProcessServer.Start(app);
-        MailingServer.Start(app);
-        ProfilerServer.Start(app);
-        DiffLogServer.Start(app);
-        RestServer.Start(app);
-        RestLogServer.Start(app);
-        PredictorServer.Start(app);
-        WorkflowServer.Start(app);
-        ConcurrentUserServer.Start(app);
-        AlertsServer.Start(app);
-        DynamicServer.Start(app);
-
-        OmniboxServer.Start(app,
-            new EntityOmniboxResultGenenerator(),
-            new DynamicQueryOmniboxResultGenerator(),
-            new ChartOmniboxResultGenerator(),
-            new DashboardOmniboxResultGenerator(DashboardLogic.Autocomplete),
-            new UserQueryOmniboxResultGenerator(UserQueryLogic.Autocomplete),
-            new UserChartOmniboxResultGenerator(UserChartLogic.Autocomplete),
-            new MapOmniboxResultGenerator(type => OperationLogic.TypeOperations(type).Any()),
-            new ReactSpecialOmniboxGenerator()
-            //new HelpModuleOmniboxResultGenerator(),
-            );//Omnibox
-
-        ReflectionServer.RegisterLike(typeof(RegisterUserModel), () => true);
-
-        SignumCultureSelectorFilter.GetCurrentCulture = (ctx) => GetCulture(ctx);
-    }
-
-    static CultureInfo DefaultCulture = CultureInfo.GetCultureInfo("en");
-
-    private static CultureInfo GetCulture(ActionContext context)
-    {
-        // 1 cookie (temporary)
-        var lang = TranslationServer.ReadLanguageCookie(context);
-        if (lang != null)
-            return CultureInfo.GetCultureInfo(lang);
-
-        // 2 user preference
-        if (UserEntity.CurrentUserCulture is { } ci)
-            return ci;
-
-        //3 requestCulture or default
-        CultureInfo? ciRequest = TranslationServer.GetCultureRequest(context);
-        if (ciRequest != null)
-            return ciRequest;
-
-        return DefaultCulture; //Translation
     }
 }
