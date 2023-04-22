@@ -10,14 +10,14 @@ using Signum.Dynamic.Views;
 using Signum.Eval;
 using Southwind.Globals;
 
-namespace Southwind.Logic;
+namespace Southwind;
 
 public class DynamicLogicStarter
 {
-    public static void Start(SchemaBuilder sb, WebServerBuilder? webServerBuilder)
+    public static void Start(SchemaBuilder sb, WebServerBuilder? wsb)
     {
         EvalLogic.Start(sb);
-        DynamicLogic.Start(sb, webServerBuilder);
+        DynamicLogic.Start(sb, wsb);
         DynamicSqlMigrationLogic.Start(sb);
         DynamicValidationLogic.Start(sb);
         DynamicViewLogic.Start(sb);

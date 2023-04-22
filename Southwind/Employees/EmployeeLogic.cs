@@ -3,7 +3,7 @@ using Southwind.Employees;
 using Southwind.Globals;
 using Southwind.Orders;
 
-namespace Southwind.Logic;
+namespace Southwind.Employee;
 
 public static class EmployeeLogic
 {

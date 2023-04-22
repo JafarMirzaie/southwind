@@ -5,7 +5,7 @@ using Southwind.Employees;
 using Southwind.Orders;
 using Southwind.Products;
 
-namespace Southwind.Logic;
+namespace Southwind.Orders;
 
 public static class OrderLogic
 {

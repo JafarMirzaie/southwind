@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Signum.API.Filters;
 using Signum.Rest;
 using Signum.Translation.Instances;
-using Southwind.Logic;
 using Southwind.Products;
 
-namespace Southwind.React.Controllers;
+namespace Southwind.Public;
+
 
 [IncludeInDocumentation, RestLogFilter(allowReplay: true)]
 public class CatalogController : Controller

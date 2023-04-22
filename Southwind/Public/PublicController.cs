@@ -6,7 +6,7 @@ using Southwind.Globals;
 using Southwind.Public;
 using System.ComponentModel.DataAnnotations;
 
-namespace HPE.React.Public;
+namespace Southwind.Public;
 
 public class PublicController : ControllerBase
 {
@@ -33,7 +33,6 @@ public class PublicController : ControllerBase
 
             if (Database.Query<UserEntity>().Any(a => a.UserName == model.EMail))
                 throw new ApplicationException(RegisterUserMessage.User0IsAlreadyRegistered.NiceToString(model.EMail));
-
 
             var employee = new EmployeeEntity
             {

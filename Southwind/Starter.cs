@@ -44,6 +44,8 @@ using Signum.UserQueries;
 using Signum.ViewLog;
 using Signum.Word;
 using Signum.Workflow;
+using Southwind.Customer;
+using Southwind.Employee;
 using Southwind.Employees;
 using Southwind.Globals;
 using Southwind.Orders;
@@ -51,7 +53,7 @@ using Southwind.Products;
 using Southwind.Public;
 using Southwind.Shippers;
 
-namespace Southwind.Logic;
+namespace Southwind;
 
 
 //Starts-up the engine for Southwind Entities, used by Web and Load Application
@@ -141,9 +143,9 @@ public static partial class Starter
             BigStringLogic.Start(sb);
             EmailLogic.Start(sb, wsb, () => Configuration.Value.Email, (template, target, message) => Configuration.Value.EmailSender);
 
-            AuthLogic.Start(sb, wsb, "System",  "Anonymous", () => Starter.Configuration.Value.AuthTokens); /* null); anonymous*/
+            AuthLogic.Start(sb, "System",  "Anonymous"); /* null); anonymous*/
             AuthLogic.Authorizer = new SouthwindAuthorizer(() => Configuration.Value.ActiveDirectory);
-            AuthLogic.StartAllModules(sb);
+            AuthLogic.StartAllModules(sb, wsb, () => Starter.Configuration.Value.AuthTokens);
             AzureADLogic.Start(sb, adGroups: true, deactivateUsersTask: true);
             ResetPasswordRequestLogic.Start(sb);
             UserTicketLogic.Start(sb);
@@ -249,10 +251,7 @@ public static partial class Starter
             }//3
 
             if (wsb != null)
-            {
                 ReflectionServer.RegisterLike(typeof(RegisterUserModel), () => true);
-
-            }
         }
     }
 
@@ -379,5 +378,19 @@ public static partial class Starter
     private static void SetupCache(SchemaBuilder sb)
     {
         CacheLogic.CacheTable<ShipperEntity>(sb);
+    }
+}
+
+internal class SouthwindAuthorizer : ActiveDirectoryAuthorizer
+{
+    public SouthwindAuthorizer(Func<ActiveDirectoryConfigurationEmbedded> getConfig) : base(getConfig)
+    {
+    }
+
+    public override void UpdateUserInternal(UserEntity user, IAutoCreateUserContext ctx)
+    {
+        base.UpdateUserInternal(user, ctx);
+
+        //user.Mixin<UserADMixin>().FirstName = ctx.FirstName;
     }
 }

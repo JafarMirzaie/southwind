@@ -1,6 +1,6 @@
 using Southwind.Customer;
 
-namespace Southwind.Logic;
+namespace Southwind.Customer;
 
 public static class CustomerLogic
 {

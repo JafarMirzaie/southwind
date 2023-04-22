@@ -3,7 +3,7 @@ using Signum.MachineLearning;
 using Southwind.Orders;
 using Southwind.Products;
 
-namespace Southwind.React.ApiControllers;
+namespace Southwind.ApiControllers;
 
 public class SalesEstimationController : ControllerBase
 {
