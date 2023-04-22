@@ -21,7 +21,7 @@ export function start(options: { routes: RouteObject[] }) {
         { token: CompanyEntity.token(a => a.entity).cast(CompanyEntity).getToString(), operation: "Contains" },
         { token: PersonEntity.token(a => a.entity).cast(PersonEntity).getToString(), operation: "Contains" },
       ],
-      pinned: { splitText: true, disableOnNull: true },
+      pinned: { splitValues: true, disableOnNull: true },
     } as FilterGroupOption]
   });
 }
