@@ -63,7 +63,7 @@ public static partial class Starter
 
     public static string? AzureStorageConnectionString { get; private set; }
 
-    public static void Start(string connectionString, bool isPostgres, string? azureStorageConnectionString, string? broadcastSecret, string? broadcastUrls, WebServerBuilder? wsb, bool includeDynamic = true )
+    public static void Start(string connectionString, bool isPostgres, string? azureStorageConnectionString, string? broadcastSecret, string? broadcastUrls, WebServerBuilder? wsb, bool includeDynamic = true)
     {
         AzureStorageConnectionString = azureStorageConnectionString;
 
@@ -75,7 +75,7 @@ public static partial class Starter
 
             string? logDatabase = Connector.TryExtractDatabaseNameWithPostfix(ref connectionString, "_Log");
 
-            SchemaBuilder sb = new CustomSchemaBuilder { LogDatabaseName = logDatabase, Tracer = initial };
+            SchemaBuilder sb = new CustomSchemaBuilder { LogDatabaseName = logDatabase, Tracer = initial, WebServerBuilder = wsb };
             sb.Schema.Version = typeof(Starter).Assembly.GetName().Version!;
             sb.Schema.ForceCultureInfo = CultureInfo.GetCultureInfo("en-US");
             sb.Schema.Settings.ImplementedByAllPrimaryKeyTypes.Add(typeof(Guid)); //because AzureAD
@@ -111,12 +111,12 @@ public static partial class Starter
             CacheLogic.Start(sb, serverBroadcast: 
                 sb.Settings.IsPostgres ? new PostgresBroadcast() : 
                 broadcastSecret != null && broadcastUrls != null ? new SimpleHttpBroadcast(broadcastSecret, broadcastUrls) :
-                null, wsb: wsb);/*Cache*/
+                null);/*Cache*/
 
             /* LightDynamic
-               DynamicLogic.Start(sb, withCodeGen: false);
+            EvalLogic.Start(sb);
             LightDynamic */
-            DynamicLogicStarter.Start(sb, wsb);
+            DynamicLogicStarter.Start(sb);
             if (includeDynamic)//Dynamic
             {
                 DynamicLogic.CompileDynamicCode();
@@ -138,14 +138,14 @@ public static partial class Starter
 
             MigrationLogic.Start(sb);
 
-            CultureInfoLogic.Start(sb, wsb);
+            CultureInfoLogic.Start(sb);
             FilePathEmbeddedLogic.Start(sb);
             BigStringLogic.Start(sb);
-            EmailLogic.Start(sb, wsb, () => Configuration.Value.Email, (template, target, message) => Configuration.Value.EmailSender);
+            EmailLogic.Start(sb, () => Configuration.Value.Email, (template, target, message) => Configuration.Value.EmailSender);
 
             AuthLogic.Start(sb, "System",  "Anonymous"); /* null); anonymous*/
             AuthLogic.Authorizer = new SouthwindAuthorizer(() => Configuration.Value.ActiveDirectory);
-            AuthLogic.StartAllModules(sb, wsb, () => Starter.Configuration.Value.AuthTokens);
+            AuthLogic.StartAllModules(sb, () => Starter.Configuration.Value.AuthTokens);
             AzureADLogic.Start(sb, adGroups: true, deactivateUsersTask: true);
             ResetPasswordRequestLogic.Start(sb);
             UserTicketLogic.Start(sb);
@@ -155,8 +155,8 @@ public static partial class Starter
             ProcessLogic.Start(sb);
             PackageLogic.Start(sb, packages: true, packageOperations: true);
 
-            SchedulerLogic.Start(sb, wsb);
-            OmniboxLogic.Start(sb, wsb, 
+            SchedulerLogic.Start(sb);
+            OmniboxLogic.Start(sb, 
                 new EntityOmniboxResultGenenerator(),
                 new DynamicQueryOmniboxResultGenerator(),
                 new ChartOmniboxResultGenerator(),
@@ -168,24 +168,24 @@ public static partial class Starter
                 //new HelpModuleOmniboxResultGenerator(),
                 );
 
-            UserQueryLogic.Start(sb, wsb);
+            UserQueryLogic.Start(sb);
             UserQueryLogic.RegisterUserTypeCondition(sb, SouthwindTypeCondition.UserEntities);
             UserQueryLogic.RegisterRoleTypeCondition(sb, SouthwindTypeCondition.RoleEntities);
             UserQueryLogic.RegisterTranslatableRoutes();                
 
-            ChartLogic.Start(sb, wsb, googleMapsChartScripts: false /*requires Google Maps API key in ChartClient */);
+            ChartLogic.Start(sb, googleMapsChartScripts: false /*requires Google Maps API key in ChartClient */);
             UserChartLogic.RegisterUserTypeCondition(sb, SouthwindTypeCondition.UserEntities);
             UserChartLogic.RegisterRoleTypeCondition(sb, SouthwindTypeCondition.RoleEntities);
             UserChartLogic.RegisterTranslatableRoutes();
 
-            DashboardLogic.Start(sb, wsb, GetFileTypeAlgorithm(p => p.CachedQueryFolder));
+            DashboardLogic.Start(sb, GetFileTypeAlgorithm(p => p.CachedQueryFolder));
             DashboardLogic.RegisterUserTypeCondition(sb, SouthwindTypeCondition.UserEntities);
             DashboardLogic.RegisterRoleTypeCondition(sb, SouthwindTypeCondition.RoleEntities);
             DashboardLogic.RegisterTranslatableRoutes();
             ViewLogLogic.Start(sb, new HashSet<Type> { typeof(UserQueryEntity), typeof(UserChartEntity), typeof(DashboardEntity) });
             SystemEventLogLogic.Start(sb);
-            DiffLogLogic.Start(sb, wsb, registerAll: true);
-            ExcelLogic.Start(sb, wsb, excelReport: true);
+            DiffLogLogic.Start(sb, registerAll: true);
+            ExcelLogic.Start(sb, excelReport: true);
             ToolbarLogic.Start(sb);
             ToolbarLogic.RegisterTranslatableRoutes();
 
@@ -193,9 +193,9 @@ public static partial class Starter
 
             NoteLogic.Start(sb, typeof(UserEntity), /*Note*/typeof(OrderEntity));
             AlertLogic.Start(sb, typeof(UserEntity), /*Alert*/typeof(OrderEntity));
-            FileLogic.Start(sb, wsb);
+            FileLogic.Start(sb);
 
-            TranslationLogic.Start(sb, wsb, countLocalizationHits: false,
+            TranslationLogic.Start(sb, countLocalizationHits: false,
                 new AlreadyTranslatedTranslator(),
                 new AzureTranslator(
                     () => Configuration.Value.Translation.AzureCognitiveServicesAPIKey,
@@ -205,24 +205,23 @@ public static partial class Starter
             TranslatedInstanceLogic.Start(sb, () => CultureInfo.GetCultureInfo("en"));
 
             HelpLogic.Start(sb);
-            WordTemplateLogic.Start(sb, wsb);
-            MapLogic.Start(sb, wsb);
-            PredictorLogic.Start(sb, wsb, GetFileTypeAlgorithm(p => p.PredictorModelFolder));
+            WordTemplateLogic.Start(sb);
+            MapLogic.Start(sb);
+            PredictorLogic.Start(sb, GetFileTypeAlgorithm(p => p.PredictorModelFolder));
             PredictorLogic.RegisterAlgorithm(TensorFlowPredictorAlgorithm.NeuralNetworkGraph, new TensorFlowNeuralNetworkPredictor());
             PredictorLogic.RegisterPublication(ProductPredictorPublication.MonthlySales, new PublicationSettings(typeof(OrderEntity)));
 
-            RestLogLogic.Start(sb, wsb);
+            RestLogLogic.Start(sb);
             RestApiKeyLogic.Start(sb);
 
             WorkflowLogicStarter.Start(sb, () => Configuration.Value.Workflow);
 
             ProfilerLogic.Start(sb,
-                wsb,
                 timeTracker: true,
                 heavyProfiler: true,
                 overrideSessionTimeout: true);
 
-            ConcurrentUserLogic.Start(sb, wsb);
+            ConcurrentUserLogic.Start(sb);
 
             // Southwind modules
 

@@ -14,10 +14,10 @@ namespace Southwind;
 
 public class DynamicLogicStarter
 {
-    public static void Start(SchemaBuilder sb, WebServerBuilder? wsb)
+    public static void Start(SchemaBuilder sb)
     {
         EvalLogic.Start(sb);
-        DynamicLogic.Start(sb, wsb);
+        DynamicLogic.Start(sb);
         DynamicSqlMigrationLogic.Start(sb);
         DynamicValidationLogic.Start(sb);
         DynamicViewLogic.Start(sb);

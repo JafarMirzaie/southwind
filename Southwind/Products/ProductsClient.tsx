@@ -30,8 +30,8 @@ export function start(options: { routes: RouteObject[] }) {
         { token: ProductEntity.token(a => a.supplier!.entity!.companyName), operation: "Contains" },
         { token: ProductEntity.token(a => a.category!.entity!.categoryName), operation: "Contains" },
       ],
-      pinned: { splitValues: true, disableOnNull: true },
-    } as FilterGroupOption]
+      pinned: { splitValue: true, active: "WhenHasValue" },
+    }]
   });
 
 }

@@ -8,7 +8,6 @@ using Signum.Basics;
 using Signum.Mailing;
 using Signum.SMS;
 using Signum.Workflow;
-using Southwind.Logic;
 using Southwind.Employees;
 using Signum.Security;
 using Southwind.Globals;

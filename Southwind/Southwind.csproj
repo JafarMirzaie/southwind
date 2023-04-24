@@ -77,12 +77,6 @@
 		<ProjectReference Include="..\Framework\Signum\Signum.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<None Update="Translations\*.xml">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-
 	<Target Name="PublishCollectDist" AfterTargets="ComputeFilesToPublish">
 		<!-- Include the newly-built files in the publish output -->
 		<ItemGroup>
