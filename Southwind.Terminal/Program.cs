@@ -73,6 +73,7 @@ class Program
                         {"CS", () => SouthwindMigrations.CSharpMigrations(false), "C# Migrations"},
                         {"S", Administrator.Synchronize},
                         {"L", () => Load(null), "Load"},
+                        {"CT", TranslationLogic.CopyTranslations},
                     }.Choose();
 
                     if (action == null)
@@ -103,7 +104,6 @@ class Program
             {
                 {"AR", AuthLogic.ImportExportAuthRules},
                 {"HL", HelpXml.ImportExportHelp},
-                {"CT", TranslationLogic.CopyTranslations},
                 {"TP", TrainPredictor},
                 {"SO", ShowOrder},
             }.ChooseMultipleWithDescription(args);

@@ -11,11 +11,6 @@
     <Member Name="PostalCode" Description="Plz" />
     <Member Name="Region" Description="Region" />
   </Type>
-  <Type Name="AllowLogin" Description="Login zulassen">
-    <Member Name="WebOnly" Description="Nur Web" />
-    <Member Name="WindowsAndWeb" Description="Windows und Web" />
-    <Member Name="WindowsOnly" Description="Nur Windows" />
-  </Type>
   <Type Name="ApplicationConfigurationEntity" Description="Anwendungskonfiguration">
     <Member Name="AuthTokens" Description="Auth-Token" />
     <Member Name="DatabaseName" Description="Datenbankname" />
@@ -25,7 +20,6 @@
     <Member Name="Folders" Description="Ordner" />
     <Member Name="Sms" Description="Sms" />
     <Member Name="Translation" Description="Übersetzung" />
-    <Member Name="WebAuthn" Description="WebAuthn" />
     <Member Name="Workflow" Description="Workflow" />
   </Type>
   <Type Name="ApplicationConfigurationOperation">
@@ -131,10 +125,10 @@
   <Type Name="OrderMessage">
     <Member Name="CancelShippedOrder0" Description="Ausgelieferte Bestellung stornieren {0}?" />
     <Member Name="DiscountShouldBeMultpleOf5" Description="Der Rabatt muss ein Vielfaches von 5 % sein." />
+    <Member Name="SalesNextMonth" Description="Umsatz nächster Monat" />
     <Member Name="SelectAShipper" Description="Wählen Sie einen Versender aus" />
     <Member Name="SubTotalPrice" Description="Teilgesamtpreis" />
     <Member Name="TotalPrice" Description="Gesamtpreis" />
-    <Member Name="SalesNextMonth" Description="Umsatz nächster Monat" />
   </Type>
   <Type Name="OrderOperation">
     <Member Name="Cancel" Description="Abbrechen" />
@@ -203,11 +197,6 @@
   <Type Name="ShipperOperation">
     <Member Name="Save" Description="Speichern" />
   </Type>
-  <Type Name="SouthwindGroup">
-    <Member Name="CurrentCustomer" Description="Aktueller Kunde" />
-    <Member Name="RoleEntities" Description="Rollenentitäten" />
-    <Member Name="UserEntities" Description="Benutzerentitäten" />
-  </Type>
   <Type Name="SupplierEntity" Description="Lieferanten" Gender="m">
     <Member Name="Address" Description="Adresse" />
     <Member Name="CompanyName" Description="Firmenname" />
@@ -233,7 +222,6 @@
     <Member Name="DeepLAPIKey" Description="DeepL API Key" />
   </Type>
   <Type Name="UserEmployeeMixin">
-    <Member Name="AllowLogin" Description="Login zulassen" />
     <Member Name="Employee" Description="Mitarbeiter" />
   </Type>
 </Translations>

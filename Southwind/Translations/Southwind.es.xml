@@ -11,11 +11,6 @@
     <Member Name="PostalCode" Description="Código postal" />
     <Member Name="Region" Description="Región" />
   </Type>
-  <Type Name="AllowLogin" Description="Permitir inicio de sesión">
-    <Member Name="WebOnly" Description="Sólo Web" />
-    <Member Name="WindowsAndWeb" Description="Windows y web" />
-    <Member Name="WindowsOnly" Description="Sólo Windows" />
-  </Type>
   <Type Name="ApplicationConfigurationEntity" Description="Configuración de la aplicación">
     <Member Name="AuthTokens" Description="Tokens de autenticación" />
     <Member Name="DatabaseName" Description="Nombre base de datos" />
@@ -25,7 +20,6 @@
     <Member Name="Folders" Description="Carpetas" />
     <Member Name="Sms" Description="SMS" />
     <Member Name="Translation" Description="Traducción" />
-    <Member Name="WebAuthn" Description="WebAuthn" />
     <Member Name="Workflow" Description="Workflow" />
   </Type>
   <Type Name="ApplicationConfigurationOperation">
@@ -201,11 +195,6 @@
   <Type Name="ShipperOperation">
     <Member Name="Save" Description="Guardar" />
   </Type>
-  <Type Name="SouthwindGroup">
-    <Member Name="CurrentCustomer" Description="Cliente actual" />
-    <Member Name="RoleEntities" Description="Entidades del Rol" />
-    <Member Name="UserEntities" Description="Entidades Usuario" />
-  </Type>
   <Type Name="SupplierEntity" Description="Proveedor">
     <Member Name="Address" Description="Dirección" />
     <Member Name="CompanyName" Description="Nombre empresa" />
@@ -231,7 +220,6 @@
     <Member Name="DeepLAPIKey" Description="DeepL API Key" />
   </Type>
   <Type Name="UserEmployeeMixin">
-    <Member Name="AllowLogin" Description="Permitir login" />
     <Member Name="Employee" Description="Empleado" />
   </Type>
 </Translations>
